@@ -10,6 +10,7 @@
 //------------------------------------------------
 #define WORLD_SIZE_X 18
 #define WORLD_SIZE_Y 18
+#define ASTEROIDS    20
 //------------------------------------------------
 typedef struct{
   int x;
@@ -23,6 +24,10 @@ typedef struct{
   int score;
  }player_data;
 
- int world_size[WORLD_SIZE_X][WORLD_SIZE_Y];
+typedef struct {
+    int asteroids;
+    char grid[WORLD_SIZE_X][WORLD_SIZE_Y];
+}World;
+
 //------------------------------------------------
 #endif //GAME_H
