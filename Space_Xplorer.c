@@ -32,7 +32,6 @@ int main(void) {
     getchar();
     printf("\n");
 
-
     print_grid (&world);
     //printf("Hello, World!\n");
     return 0;
