@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 //-------------------Global defines--------------------------------
-#define WORLD_SIZE_X 18
-#define WORLD_SIZE_Y 18
+#define WORLD_SIZE_X 19
+#define WORLD_SIZE_Y 19
 #define ASTEROIDS    20
 #define SPACE_JUNK   10
 #define NAME_LENGTH  20
