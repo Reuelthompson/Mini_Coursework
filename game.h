@@ -7,10 +7,11 @@
 //-------------------Global Libraries------------------------------
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 //-------------------Global defines--------------------------------
 #define WORLD_SIZE_X 19
 #define WORLD_SIZE_Y 19
-#define ASTEROIDS    20
+#define ASTEROIDS    90
 #define SPACE_JUNK   10
 #define NAME_LENGTH  20
 //-------------------Global structures-----------------------------
@@ -20,9 +21,8 @@ typedef struct{
 }coordinates;
 
 typedef struct {
-    char First_name[NAME_LENGTH];   //initialise variables inside a structure
-    char Initial;
-    char Surname[NAME_LENGTH];
+    char user_name[NAME_LENGTH];   //initialise variables inside a structure
+    char ship_name[NAME_LENGTH];
 }person_name;                       //Using Typdef to simplify Syntax further on
 
 typedef struct{
