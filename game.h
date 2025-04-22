@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 //-------------------Global defines--------------------------------
 #define WORLD_SIZE_X 19
 #define WORLD_SIZE_Y 19
