@@ -5,6 +5,7 @@ void world_init(World *world);    //Initialise player position and world
 void asteroids_init(World *world);
 void space_junk_init(World *world);
 void print_grid(const World *world);
+void print_temp_grid(const World *world);
 void World_update(World *world, player_data *player);
 void asteroid_update(World *world);
 void space_junk_update(World *world);
@@ -31,18 +32,17 @@ int main(void) {
     space_junk_init (&world);
 
     player_data player = {};
-    player_name(&player);
+    //player_name(&player);
     player_data_init (&player);
-    print_player_data(&player);
+    //print_player_data(&player);
     player_world(&world, &player);
 
-    printf("\nPress any key to start...\n");
-    getchar();
-    printf("\n");
+    //printf("\nPress any key to start...\n");
+    //getchar();
+    //printf("\n");
 
     print_grid (&world);
-    asteroid_update(&world);
-    space_junk_update(&world);
+    World_update(&world, &player);
     print_grid (&world);
     //printf("Hello, World!\n");
     return 0;
@@ -128,9 +128,10 @@ void asteroids_init(World *world) {
             int asteroid_seed = random_number_generator();
             if (asteroid_seed <= 15 && x > 3 && world->asteroids != 0) {
                 if ((world->grid[y][x+1] != 'A' || 'J') && (world->grid[y+1][x] != 'A' || 'J') &&
-                    (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
-                        (world->grid[y-1][x-1] != 'A' || 'J') && (world->grid[y+1][x+1] != 'A' || 'J')) {
+                        (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
+                            (world->grid[y-1][x-1] != 'A' || 'J') && (world->grid[y+1][x+1] != 'A' || 'J')) {
                     world->grid[y][x] = 'A';
+                    world->temp_grid[y][x] = 'A';
                     world -> asteroids --;
                     }
                 }
@@ -146,7 +147,8 @@ void space_junk_init(World *world) {
                         (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
                             (world->grid[y-1][x-1] != 'A' || 'J') && (world->grid[y+1][x+1] != 'A' || 'J')) {
                     world->grid[y][x] = 'J';
-                    world->asteroids--;
+                    world->temp_grid[y][x] = 'J';
+                    world->space_junk --;
                 }
             }
         }
@@ -155,9 +157,9 @@ void space_junk_init(World *world) {
 void asteroid_update(World *world) {
     for (int y = 0; y < WORLD_SIZE_X; y++) {
         for (int x = 0; x < WORLD_SIZE_Y; x++) {
-            if ( world->grid[y][x] == 'A') {
-                world->grid[y][x-1] = 'A';
-                world->grid[y][x] = ' ';
+            if (world->temp_grid[y][x] == 'A') {
+                world->temp_grid[y][x-1] = 'A';
+                world->temp_grid[y][x] = ' ';
             }
         }
     }
@@ -165,31 +167,34 @@ void asteroid_update(World *world) {
 void space_junk_update(World *world) {
     for (int y = 0; y < WORLD_SIZE_Y; y++) {
         for (int x = 0; x < WORLD_SIZE_X; x++) {
-             if (world->grid[y][x] == 'J') {
-                world->grid[y][x-1] = 'J';
-                world->grid[y][x] = ' ';
+             if (world->temp_grid[y][x] == 'J') {
+                 world->temp_grid[y][x-1] = 'J';
+                 world->temp_grid[y][x] = ' ';
             }
         }
     }
 }
 void World_update(World *world, player_data *player) {
-    char update_temp_grid_A[WORLD_SIZE_X][WORLD_SIZE_Y];
-    char update_temp_grid_J[WORLD_SIZE_X][WORLD_SIZE_Y];
-    char update_temp_grid[WORLD_SIZE_X][WORLD_SIZE_Y];
-    for (int x = 0; x < WORLD_SIZE_X; x++) {
-        for (int y = 0; y < WORLD_SIZE_Y; y++) {
-            update_temp_grid_A[x][y] = world->grid[x][y];
-        }
-    }
-
     for (int y = 0; y < WORLD_SIZE_Y; y++) {
         for (int x = 0; x < WORLD_SIZE_X; x++) {
-            world->grid[x][y] = update_temp_grid[x][y];
+             world->temp_grid[x][y] = world->grid[x][y] ;
+        }
+    }
+    asteroid_update(world);
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
+            world->grid[x][y] = world->temp_grid[x][y] ;
+        }
+    }
+    space_junk_update(world);
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
+            world->grid[x][y] = world->temp_grid[x][y] ;
         }
     }
 }
 void print_grid(const World *world){           //function to print out the world
-    printf ("\n");
+    printf ("\n\n");
     for (int y = 0; y < WORLD_SIZE_X; y++) {
         for (int x = 0; x < WORLD_SIZE_Y; x++) {
             printf("    %c", world->grid[y][x]);
@@ -197,9 +202,18 @@ void print_grid(const World *world){           //function to print out the world
         printf ("\n");
     }
 }
+void print_temp_grid(const World *world){           //function to print out the world
+    printf ("\n\n");
+    for (int y = 0; y < WORLD_SIZE_X; y++) {
+        for (int x = 0; x < WORLD_SIZE_Y; x++) {
+            printf("    %c", world->temp_grid[y][x]);
+        }
+        printf ("\n");
+    }
+}
 int random_number_generator() {
     int random_number = (rand()% 100) + 1;
-    printf("Random number: %d\n", random_number);
+    //printf("Random number: %d\n", random_number);
     return random_number;
 }
 int random_number_generator_y() {

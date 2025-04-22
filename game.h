@@ -37,6 +37,7 @@ typedef struct {
     int asteroids;
     int space_junk;
     char grid[WORLD_SIZE_X][WORLD_SIZE_Y];
+    char temp_grid[WORLD_SIZE_X][WORLD_SIZE_Y];
 }World;
 
 //------------------------------------------------
