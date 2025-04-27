@@ -197,11 +197,11 @@ void space_junk_collected(const World *world, player_data *player) {    // Funct
 
     // Check if the player is on a space junk ('J') on the temporary grid
     if (world->temp_grid[y][x] == 'J') {                                // If there's space junk at the player's position
-        player->space_junk_collected += 10;                             // Increase the player's space junk collected by 10
+        player->space_junk_collected += 1;                              // Increase the player's space junk collected by 1
     }
 }
 void score_calculation(World *world, player_data *player) {             // Function to calculate the player's score based on collected junk and remaining fuel
-    player->score = player->space_junk_collected - player->fuel;        // Score = space junk collected minus the remaining fuel
+    player->score = player->space_junk_collected * 10 - player->fuel;   // Score = space junk collected minus the remaining fuel
 }
 //----------------------------------------------World functions---------------------------------------------------------
 void world_init(World *world) {                     // Function to initialize or reset the world grid
@@ -322,7 +322,12 @@ void World_update(World *world, const player_data *player) { // Function to upda
             world->grid[x][y] = world->temp_grid[x][y]; // Copy temp grid back to the main grid
         }
     }
-    space_junk_update(world);                          // Update space junk positions
+    space_junk_update(world);                            // Update space junk positions
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {             // Loop through the grid's y-dimension
+        for (int x = 0; x < WORLD_SIZE_X; x++) {         // Loop through the grid's x-dimension
+            world->grid[x][y] = world->temp_grid[x][y] ; // Copy temp grid back to the main grid
+        }
+    }
     new_space(world);                                  // Clear the last row in the temp grid
     new_asteroids(world);                              // Add new asteroids to the last row
     new_space_junk(world);                             // Add new space junk to the last row
