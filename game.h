@@ -45,7 +45,6 @@ typedef struct {
 
 //------------------------------------------------
 
-player_data leaderboard[TOP_SCORES];  // Array to hold the leaderboard
-
+player_data leader_board[TOP_SCORES];  // Array to hold the leaderboard
 
 #endif //GAME_H

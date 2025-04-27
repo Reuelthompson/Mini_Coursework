@@ -1,4 +1,4 @@
-Welcome to ______
+Welcome to Asteroid Antics
 You are in space trying to avoid asteroids while collecting space junk.
 You have a limited ammount of fuel to work with to collect as much space junk as possible
 To move in any direction use the W, A, S, &D keys and 'q' to remain in place.
