@@ -6,5 +6,3 @@ To move in any direction use the W, A, S, &D keys and 'q' to remain in place.
 Difficulty:
 press '0' for easy mode.
 press '1' for hard mode.
-0
-

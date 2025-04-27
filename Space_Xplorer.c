@@ -9,8 +9,8 @@
 #include "game.h"
 //-----------------------------------------------Prototypes-------------------------------------------------------------
 void world_init(World *world);
-void asteroids_init(World *world);
-void space_junk_init(World *world);
+void asteroids_init(World *world, const int *game_mode);
+void space_junk_init(World *world, const int *game_mode);
 
 void print_grid(const World *world);
 void print_temp_grid(const World *world);
@@ -51,8 +51,8 @@ int main(void) {
     int game_mode = instructions();             //Get game mode difficulty and print the instructions from the txt file
 
     world_init (&world);                        //Build world
-    asteroids_init (&world);                    //Add asteroids
-    space_junk_init (&world);                   //Add space junk
+    asteroids_init (&world, &game_mode);                    //Add asteroids
+    space_junk_init (&world, &game_mode);                   //Add space junk
 
     player_name(&player);                       //Get player name
     player_data_init (&player, &game_mode);     //Sets score, position, and fuel
@@ -214,12 +214,16 @@ void world_init(World *world) {                     // Function to initialize or
     }
 }
 
-void asteroids_init(World *world) {                             // Function to initialize asteroids in the world
+void asteroids_init(World *world, const int *game_mode) {       // Function to initialize asteroids in the world
+    int  difficulty = 15;
     for (int y = 0; y < WORLD_SIZE_Y; y++) {                    // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_X; x++) {                // Loop through the grid's x-dimension
             int asteroid_seed = random_number_generator();      // Generate a random number for asteroid placement
+            if (*game_mode == 1) {
+                difficulty = 25;
+            }
             // Check if there's space for an asteroid, and it doesn't collide with other objects
-            if (asteroid_seed <= 15 && x > 3 && world->asteroids != 0) {
+            if (asteroid_seed <= difficulty && x > 3 && world->asteroids != 0) {
                 if ((world->grid[y][x+1] != 'A' || 'J') && (world->grid[y+1][x] != 'A' || 'J') &&
                     (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
                     (world->grid[y-1][x-1] != 'A' || 'J') && (world->grid[y+1][x+1] != 'A' || 'J')) {
@@ -232,12 +236,16 @@ void asteroids_init(World *world) {                             // Function to i
     }
 }
 
-void space_junk_init(World *world) {                 // Function to initialize space junk in the world
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
-            int space_junk_seed = random_number_generator(); // Generate a random number for space junk placement
+void space_junk_init(World *world,const int *game_mode) {       // Function to initialize space junk in the world
+    int  difficulty = 5;
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {                    // Loop through the grid's y-dimension
+        for (int x = 0; x < WORLD_SIZE_X; x++) {                // Loop through the grid's x-dimension
+            int space_junk_seed = random_number_generator();    // Generate a random number for space junk placement
+            if (*game_mode == 1) {
+                difficulty = 3;
+            }
             // Check if space junk can be placed and not collide with asteroids or other junk
-            if (space_junk_seed <= 5 && x > 3 && world->space_junk != 0 &&
+            if (space_junk_seed <= difficulty && x > 3 && world->space_junk != 0 &&
                 (world->grid[y][x+1] != 'A' || 'J') && (world->grid[y+1][x] != 'A' || 'J') &&
                 (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
                 (world->grid[y-1][x-1] != 'A' || 'J') && (world->grid[y+1][x+1] != 'A' || 'J')) {
