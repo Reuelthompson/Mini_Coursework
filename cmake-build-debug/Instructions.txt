@@ -1,1 +1,8 @@
-This text is a test to see if the code works :D
+Welcome to ______
+You are in space trying to avoid asteroids while collecting space junk.
+You have a limited ammount of fuel to work with to collect as much space junk as possible
+To move in any direction use the W, A, S, &D keys and 'q' to remain in place.
+
+Difficulty:
+press '0' for easy mode.
+press '1' for hard mode.

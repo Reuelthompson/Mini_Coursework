@@ -1,6 +1,11 @@
+//
+// Created by Reuel on 03/04/2025.
+//
+//-----------------------Includes-----------------------------------
 #include "game.h"
+//
 FILE *fptr;
-
+//----------------------Prototypes----------------------------------
 void world_init(World *world);    //Initialise player position and world
 void asteroids_init(World *world);
 void space_junk_init(World *world);
@@ -12,57 +17,75 @@ void space_junk_update(World *world);
 void new_asteroid(World *world);
 void new_space_junk(World *world);
 void new_space(World *world);
+void space_junk_collected(const World *world, player_data *player);
 
 int random_number_generator();
 
 void player_name(player_data *player);
-void player_data_init(player_data *player);
+void player_data_init(player_data *player, const int *game_mode);
 void player_data_update(player_data *player);
 void print_player_data(player_data *player);
 void player_world(World *world, const player_data *player);
-void player_move(player_data *player);
+void player_move(player_data *player, World *world);
 
 bool collision_detection(World *world, const player_data *player);
+void score_calculation(World *world, player_data *player);
 
-void instructions();
-
+int instructions();
+int load_score_board();
+void sort_score_board();
+void save_score_board();
+//---------------------------Main----------------------------------
 int main(void) {
-    srand(time(NULL));                     //Seed random number generator
-    bool end = true;
-    instructions();
 
     World world = {};
+    player_data player = {};
+
+    srand(time(NULL));                     //Seed random number generator
+    bool end = true;
+
+    int game_mode = instructions();
+
     world_init (&world);
     asteroids_init (&world);
     space_junk_init (&world);
 
-    player_data player = {};
-    //player_name(&player);
-    player_data_init (&player);
-    //print_player_data(&player);
+    player_name(&player);
+    player_data_init (&player, &game_mode);
     player_world(&world, &player);
 
-    //printf("\nPress any key to start...\n");
-    //getchar();
-    //printf("\n");
+    printf("\nPress any key to start...\n");
+    getchar( );
+    printf("\n");
+
     do {
         print_grid(&world);
-        const int x = player.location.x;
-        const int y = player.location.y;
-        world.grid[y][x] = ' ';
-        player_move(&player);
+        player_move(&player, &world);
         printf("\n %d\n", player.fuel);
-        //print_player_data(&player);
         World_update(&world, &player);
+        space_junk_collected(&world, &player);
         end = collision_detection(&world, &player);
         if (player.fuel <= 0) {
             end = false;
         }
     } while (end);
-    //printf("Hello, World!\n");
+    print_grid(&world);
+    score_calculation(&world, &player);
+    print_player_data(&player);
+    printf("End of the game!\n");
+
+    int player_count = load_score_board();
+    leaderboard[player_count] = player;
+    player_count++;
+    sort_score_board(player_count);
+    if (player_count > TOP_SCORES) {
+        player_count = TOP_SCORES;
+    }
+    save_score_board(player_count);
     return 0;
 }
-void instructions() {
+//----------------------Functions----------------------------------
+int instructions() {
     printf("\nWelcome to XPLORER!\n");
     printf("Press any key to continue...");
     getchar();
@@ -72,7 +95,43 @@ void instructions() {
     while(fgets(instructions, 100, fptr )) {
         printf("%s", instructions);
     }
+    int game_mode = 0;
     fclose(fptr);// Close the file
+    scanf(" %c", &game_mode);
+    return game_mode;
+}
+int load_score_board() {
+    FILE *fptr = fopen("Leader_board.txt", "r");
+    int count = 0;
+    if (fptr == NULL) return 0;
+    while (fscanf(fptr, "%s %s %d", leaderboard[count].person.user_name, leaderboard[count].person.ship_name, &leaderboard[count].score) == 3) {
+        count++;
+        if (count >= TOP_SCORES) break;
+    }
+    fclose(fptr);
+    return count;
+}
+void sort_score_board(int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = i + 1; j < count; j++) {
+            if (leaderboard[j].score > leaderboard[i].score) {
+                player_data temp = leaderboard[i];
+                leaderboard[i] = leaderboard[j];
+                leaderboard[j] = temp;
+            }
+        }
+    }
+}
+void save_score_board(int count) {
+    FILE *file = fopen("Leader_board.txt", "w");
+    if (file == NULL) {
+        perror("Error saving scoreboard");
+        return;
+    }
+    for (int i = 0; i < count; i++) {
+        fprintf(file, "%s %s %d\n", leaderboard[i].person.user_name, leaderboard[i].person.ship_name, leaderboard[i].score);
+    }
+    fclose(file);
 }
 void player_name(player_data *player) {
     printf("\nEnter Username: \n");
@@ -80,11 +139,15 @@ void player_name(player_data *player) {
     printf("Enter Ship name: \n");
     scanf("%s", &player->person.ship_name);
 }
-void player_data_init(player_data *player) {    //function to initialise the player data
+void player_data_init(player_data *player, const int *game_mode) {    //function to initialise the player data
     player->location.x           = 0;
     player->location.y           = 9;
     player->score                = 0;
-    player->fuel               = 10;
+    if (game_mode == 0) {
+        player->fuel           = 100;
+    }else
+        player->fuel            = 50;
+
     player->space_junk_collected = 0;
 }
 void print_player_data(player_data *player) {   //function for testing, to see  what data is stored
@@ -96,7 +159,7 @@ void print_player_data(player_data *player) {   //function for testing, to see  
     printf("fuel: %d\n", player->fuel);
     printf("space_junk_collected: %d\n", player->space_junk_collected);
 }
-void player_world(World *world, const player_data *player) {
+void player_world(World *world, const player_data *player) {    //doesn't need to be a nested for loop
     for (int y = 0; y < WORLD_SIZE_X; y++) {
         for (int x = 0; x < WORLD_SIZE_Y; x++) {
             if (player->location.x == x && player->location.y == y) {
@@ -105,29 +168,38 @@ void player_world(World *world, const player_data *player) {
         }
     }
 }
-void player_move(player_data *player) {
+void player_move(player_data *player, World *world) {
+    const int x = player->location.x;
+    const int y = player->location.y;
+    world->grid[y][x] = ' ';
     char direction;
     printf("What is your next move?\n");
     scanf(" %c", &direction);
     switch (direction) {
         case 'w':
             player->location.y = player->location.y - 1;
+            player->fuel --;
             break;
         case 'a':
             if (player->location.x != 0) {
                 player->location.x = player->location.x - 1;
+                player->fuel ++;
             }
             break;
         case 's':
             player->location.y = player->location.y + 1;
+            player->fuel --;
             break;
         case 'd':
             player->location.x = player->location.x + 1;
+            player->fuel --;
+            break;
+        case'q':
             break;
         default:
             break;
     }
-    player->fuel --;
+
 }
 bool collision_detection(World *world, const player_data *player) {
     const int x = player->location.x;
@@ -135,11 +207,22 @@ bool collision_detection(World *world, const player_data *player) {
     if (x < 0 || x >= WORLD_SIZE_X || y < 0 || y >= WORLD_SIZE_Y) {
         return false;
     }
-    if (world->grid[y][x] == 'A') {
+    if (world->temp_grid[y][x] == 'A') {
         world->grid[y][x] = 'D';
         return false;
     }
     return true;
+}
+void space_junk_collected(const World *world, player_data *player) {
+    const int x = player->location.x;
+    const int y = player->location.y;
+    if (world->temp_grid[y][x] == 'J') {
+        player->space_junk_collected =+ 1;
+
+    }
+}
+void score_calculation(World *world, player_data *player) {
+    player->score = player->space_junk_collected - player->fuel;
 }
 void world_init(World *world) {                  //function to initialise the world or reset if needed
     world->asteroids = ASTEROIDS;

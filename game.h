@@ -9,12 +9,14 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 //-------------------Global defines--------------------------------
 #define WORLD_SIZE_X 19
 #define WORLD_SIZE_Y 19
 #define ASTEROIDS    90
 #define SPACE_JUNK   10
 #define NAME_LENGTH  20
+#define TOP_SCORES   10
 //-------------------Global structures-----------------------------
 typedef struct{
   int x;
@@ -42,4 +44,8 @@ typedef struct {
 }World;
 
 //------------------------------------------------
+
+player_data leaderboard[TOP_SCORES];  // Array to hold the leaderboard
+
+
 #endif //GAME_H
