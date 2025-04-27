@@ -238,12 +238,9 @@ void space_junk_init(World *world) {                 // Function to initialize s
             int space_junk_seed = random_number_generator(); // Generate a random number for space junk placement
             // Check if space junk can be placed and not collide with asteroids or other junk
             if (space_junk_seed <= 5 && x > 3 && world->space_junk != 0 &&
-                (world->grid[y][x+1] != 'A' || 'J') &&
-                (world->grid[y+1][x] != 'A' || 'J') &&
-                (world->grid[y][x-1] != 'A' || 'J') &&
-                (world->grid[y-1][x] != 'A' || 'J') &&
-                (world->grid[y-1][x-1] != 'A' || 'J') &&
-                (world->grid[y+1][x+1] != 'A' || 'J')) {
+                (world->grid[y][x+1] != 'A' || 'J') && (world->grid[y+1][x] != 'A' || 'J') &&
+                (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
+                (world->grid[y-1][x-1] != 'A' || 'J') && (world->grid[y+1][x+1] != 'A' || 'J')) {
                 world->grid[y][x] = 'J';        // Place space junk on the grid
                 world->temp_grid[y][x] = 'J';   // Also mark it in the temporary grid
                 world->space_junk--;            // Decrease the number of remaining space junk
@@ -251,7 +248,6 @@ void space_junk_init(World *world) {                 // Function to initialize s
         }
     }
 }
-
 void asteroid_update(World *world) {                 // Function to update asteroids' positions
     for (int y = 0; y < WORLD_SIZE_X; y++) {         // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_Y; x++) {     // Loop through the grid's x-dimension
@@ -262,7 +258,6 @@ void asteroid_update(World *world) {                 // Function to update aster
         }
     }
 }
-
 void space_junk_update(World *world) {               // Function to update space junk's positions
     for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
@@ -273,7 +268,6 @@ void space_junk_update(World *world) {               // Function to update space
         }
     }
 }
-
 void new_space(World *world) {                       // Function to clear the last row in the temporary grid
     for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
@@ -283,7 +277,6 @@ void new_space(World *world) {                       // Function to clear the la
         }
     }
 }
-
 void new_asteroids(World *world) {                   // Function to generate new asteroids in the last row
     for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
@@ -296,7 +289,6 @@ void new_asteroids(World *world) {                   // Function to generate new
         }
     }
 }
-
 void new_space_junk(World *world) {                  // Function to generate new space junk in the last row
     for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
@@ -333,7 +325,6 @@ void World_update(World *world, const player_data *player) { // Function to upda
     new_space_junk(world);                             // Add new space junk to the last row
     player_world(world, player);                       // Update the player's position in the world
 }
-
 void print_grid(const World *world) {                  // Function to print the current grid
     printf("\n\n");
     for (int y = 0; y < WORLD_SIZE_X; y++) {           // Loop through the grid's y-dimension
@@ -343,7 +334,6 @@ void print_grid(const World *world) {                  // Function to print the 
         printf("\n");
     }
 }
-
 void print_temp_grid(const World *world) {                  // Function to print the temporary grid
     printf("\n\n");
     for (int y = 0; y < WORLD_SIZE_X; y++) {                // Loop through the grid's y-dimension
@@ -353,12 +343,10 @@ void print_temp_grid(const World *world) {                  // Function to print
         printf("\n");
     }
 }
-
 int random_number_generator() {                        // Function to generate a random number between 1 and 100
     int random_number = (rand() % 100) + 1;            // Generate a random number between 1 and 100
     return random_number;                              // Return the generated number
 }
-
 //-----------------------------------------------Score_board------------------------------------------------------------
 int load_score_board() {                               // Function to load the scoreboard from file
     FILE *fptr = fopen("Leader_board.txt", "r");        // Open leaderboard file for reading
@@ -372,7 +360,6 @@ int load_score_board() {                               // Function to load the s
     fclose(fptr);                                       // Close the file
     return count;                                       // Return the number of entries loaded
 }
-
 void sort_score_board(int count) {                      // Function to sort the leaderboard in descending order
     for (int i = 0; i < count - 1; i++) {               // Loop through the leaderboard
         for (int j = i + 1; j < count; j++) {           // Loop through the leaderboard
@@ -384,7 +371,6 @@ void sort_score_board(int count) {                      // Function to sort the 
         }
     }
 }
-
 void save_score_board(int count) {                              // Function to save the leaderboard to file
     FILE *file = fopen("Leader_board.txt", "w");  // Open leaderboard file for writing
     if (file == NULL) {                                         // If file can't be opened, print error
