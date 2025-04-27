@@ -26,7 +26,6 @@ int random_number_generator();
 
 void player_name(player_data *player);
 void player_data_init(player_data *player, const int *game_mode);
-void player_data_update(player_data *player);
 void print_player_data(player_data *player);
 void player_world(World *world, const player_data *player);
 void player_move(player_data *player, World *world);
@@ -101,15 +100,15 @@ int instructions() {
     getchar();                                                      // Wait for user input to proceed
     printf("\n");                                             // New line for spacing
 
-    FILE *fptr = fopen("Instructions.txt", "r");            // Open the instructions file in read mode
-    char instructions[100];                                         // Buffer to store each line of the instructions
-    while(fgets(instructions, 100, fptr )) {               // Read and print each line until end of file
+    FILE *fptr = fopen("Instructions.txt", "r");      // Open the instructions file in read mode
+    char instructions[255];                                         // Buffer to store each line of the instructions
+    while(fgets(instructions, 255, fptr )) {               // Read and print each line until end of file
         printf("%s", instructions);                           // Print the current line of instructions
     }
     int game_mode = 0;                                              // Initialize game mode variable
     fclose(fptr);                                                   // Close the instructions file
 
-    scanf("%d", &game_mode);                                 // Get the player's chosen game mode (easy/hard)
+    scanf("%d", &game_mode);                                  // Get the player's chosen game mode (easy/hard)
     return game_mode;                                               // Return the selected game mode
 }
 //--------------------------------------------Player functions----------------------------------------------------------
@@ -205,14 +204,14 @@ void space_junk_collected(const World *world, player_data *player) {    // Funct
     }
 }
 void score_calculation(World *world, player_data *player) {             // Function to calculate the player's score based on collected junk and remaining fuel
-    player->score = player->space_junk_collected * 10 - player->fuel;   // Score = space junk collected minus the remaining fuel
+    player->score = player->space_junk_collected * 10 + player->fuel;   // Score = space junk collected minus the remaining fuel
 }
 //----------------------------------------------World functions---------------------------------------------------------
 void world_init(World *world) {                     // Function to initialize or reset the world grid
     world->asteroids = ASTEROIDS;                   // Set the number of asteroids in the world
     world->space_junk = SPACE_JUNK;                 // Set the number of space junk items in the world
     for (int i = 0; i < WORLD_SIZE_X; i++) {        // Loop through the grid's x-dimension
-        for (int j = 0; j < WORLD_SIZE_Y; j++) {    // Loop through the grid's y-dimension
+        for (int j = 0; j < WORLD_SIZE_Y; j++) {
             world->grid[i][j] = ' ';                // Initialize each grid position as empty (' ')
         }
     }
@@ -220,8 +219,8 @@ void world_init(World *world) {                     // Function to initialize or
 
 void asteroids_init(World *world, const int *game_mode) {       // Function to initialize asteroids in the world
     int  difficulty = 15;
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {                    // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {                // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
             int asteroid_seed = random_number_generator();      // Generate a random number for asteroid placement
             if (*game_mode == 1) {
                 difficulty = 25;
@@ -242,8 +241,8 @@ void asteroids_init(World *world, const int *game_mode) {       // Function to i
 
 void space_junk_init(World *world,const int *game_mode) {       // Function to initialize space junk in the world
     int  difficulty = 5;
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {                    // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {                // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
             int space_junk_seed = random_number_generator();    // Generate a random number for space junk placement
             if (*game_mode == 1) {
                 difficulty = 3;
@@ -261,8 +260,8 @@ void space_junk_init(World *world,const int *game_mode) {       // Function to i
     }
 }
 void asteroid_update(World *world) {                 // Function to update asteroids' positions
-    for (int y = 0; y < WORLD_SIZE_X; y++) {         // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_Y; x++) {     // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_X; y++) {
+        for (int x = 0; x < WORLD_SIZE_Y; x++) {
             if (world->temp_grid[y][x] == 'A') {     // Check if there is an asteroid in the temporary grid
                 world->temp_grid[y][x-1] = 'A';      // Move the asteroid one step left in the temporary grid
                 world->temp_grid[y][x] = ' ';        // Clear the current position
@@ -271,8 +270,8 @@ void asteroid_update(World *world) {                 // Function to update aster
     }
 }
 void space_junk_update(World *world) {               // Function to update space junk's positions
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
             if (world->temp_grid[y][x] == 'J') {     // Check if there is space junk in the temporary grid
                 world->temp_grid[y][x-1] = 'J';      // Move the space junk one step left in the temporary grid
                 world->temp_grid[y][x] = ' ';        // Clear the current position
@@ -281,8 +280,8 @@ void space_junk_update(World *world) {               // Function to update space
     }
 }
 void new_space(World *world) {                       // Function to clear the last row in the temporary grid
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
             if (y == WORLD_SIZE_X - 1) {             // If it's the last row
                 world->temp_grid[y][x] = ' ';        // Clear the position
             }
@@ -291,8 +290,8 @@ void new_space(World *world) {                       // Function to clear the la
 }
 void new_asteroids(World *world, const int *game_mode) {        // Function to generate new asteroids in the last row
     int  difficulty = 15;
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
             if (y == WORLD_SIZE_X - 1) {             // If it's the last row
                 int asteroid_seed = random_number_generator(); // Generate a random number for asteroid placement
                 if (*game_mode == 1) {
@@ -307,8 +306,8 @@ void new_asteroids(World *world, const int *game_mode) {        // Function to g
 }
 void new_space_junk(World *world, const int *game_mode) {        // Function to generate new space junk in the last row
     int  difficulty = 5;
-    for (int y = 0; y < WORLD_SIZE_Y; y++) {         // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_X; x++) {     // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_Y; y++) {
+        for (int x = 0; x < WORLD_SIZE_X; x++) {
             if (y == WORLD_SIZE_X - 1) {             // If it's the last row
                 int space_junk_seed = random_number_generator(); // Generate a random number for space junk placement
                 if (*game_mode == 1) {
@@ -347,17 +346,17 @@ void World_update(World *world, const player_data *player, const int *game_mode)
 }
 void print_grid(const World *world) {                  // Function to print the current grid
     printf("\n\n");
-    for (int y = 0; y < WORLD_SIZE_X; y++) {           // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_Y; x++) {       // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_X; y++) {
+        for (int x = 0; x < WORLD_SIZE_Y; x++) {
             printf("    %c", world->grid[y][x]); // Print each grid element
         }
         printf("\n");
     }
 }
-void print_temp_grid(const World *world) {                  // Function to print the temporary grid
+void print_temp_grid(const World *world) {                  // Function to print the temporary grid (testing only)
     printf("\n\n");
-    for (int y = 0; y < WORLD_SIZE_X; y++) {                // Loop through the grid's y-dimension
-        for (int x = 0; x < WORLD_SIZE_Y; x++) {            // Loop through the grid's x-dimension
+    for (int y = 0; y < WORLD_SIZE_X; y++) {
+        for (int x = 0; x < WORLD_SIZE_Y; x++) {
             printf("    %c", world->temp_grid[y][x]); // Print each temporary grid element
         }
         printf("\n");
