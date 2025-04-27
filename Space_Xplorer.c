@@ -91,13 +91,13 @@ int main(void) {
 }
 //--------------------------------------------Functions-----------------------------------------------------------------
 int instructions() {
-    FILE *fptr;                                                     // File pointer for reading the instructions file
+    // File pointer for reading the instructions file
     printf("\nWelcome to Asteroid Antics!\n");
     printf("Press any key to continue...");
     getchar();                                                      // Wait for user input to proceed
     printf("\n");                                             // New line for spacing
 
-    fptr = fopen("Instructions.txt", "r");            // Open the instructions file in read mode
+    FILE *fptr = fopen("Instructions.txt", "r");            // Open the instructions file in read mode
     char instructions[100];                                         // Buffer to store each line of the instructions
     while(fgets(instructions, 100, fptr )) {               // Read and print each line until end of file
         printf("%s", instructions);                           // Print the current line of instructions
@@ -105,7 +105,7 @@ int instructions() {
     int game_mode = 0;                                              // Initialize game mode variable
     fclose(fptr);                                                   // Close the instructions file
 
-    scanf(" %d", &game_mode);                                 // Get the player's chosen game mode (easy/hard)
+    scanf("%d", &game_mode);                                 // Get the player's chosen game mode (easy/hard)
     return game_mode;                                               // Return the selected game mode
 }
 //--------------------------------------------Player functions----------------------------------------------------------
@@ -218,7 +218,7 @@ void asteroids_init(World *world) {                             // Function to i
     for (int y = 0; y < WORLD_SIZE_Y; y++) {                    // Loop through the grid's y-dimension
         for (int x = 0; x < WORLD_SIZE_X; x++) {                // Loop through the grid's x-dimension
             int asteroid_seed = random_number_generator();      // Generate a random number for asteroid placement
-            // Check if there's space for an asteroid and it doesn't collide with other objects
+            // Check if there's space for an asteroid, and it doesn't collide with other objects
             if (asteroid_seed <= 15 && x > 3 && world->asteroids != 0) {
                 if ((world->grid[y][x+1] != 'A' || 'J') && (world->grid[y+1][x] != 'A' || 'J') &&
                     (world->grid[y][x-1] != 'A' || 'J') && (world->grid[y-1][x] != 'A' || 'J') &&
