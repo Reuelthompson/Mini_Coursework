@@ -14,7 +14,7 @@ void print_temp_grid(const World *world);
 void World_update(World *world, const player_data *player);
 void asteroid_update(World *world);
 void space_junk_update(World *world);
-void new_asteroid(World *world);
+void new_asteroids(World *world);
 void new_space_junk(World *world);
 void new_space(World *world);
 void space_junk_collected(const World *world, player_data *player);
@@ -33,8 +33,8 @@ void score_calculation(World *world, player_data *player);
 
 int instructions();
 int load_score_board();
-void sort_score_board();
-void save_score_board();
+void sort_score_board(int count);
+void save_score_board(int count);
 //---------------------------Main----------------------------------
 int main(void) {
 
@@ -55,7 +55,7 @@ int main(void) {
     player_world(&world, &player);
 
     printf("\nPress any key to start...\n");
-    getchar( );
+    getchar();
     printf("\n");
 
     do {
@@ -147,7 +147,6 @@ void player_data_init(player_data *player, const int *game_mode) {    //function
         player->fuel           = 100;
     }else
         player->fuel            = 50;
-
     player->space_junk_collected = 0;
 }
 void print_player_data(player_data *player) {   //function for testing, to see  what data is stored
@@ -199,7 +198,6 @@ void player_move(player_data *player, World *world) {
         default:
             break;
     }
-
 }
 bool collision_detection(World *world, const player_data *player) {
     const int x = player->location.x;
@@ -217,7 +215,7 @@ void space_junk_collected(const World *world, player_data *player) {
     const int x = player->location.x;
     const int y = player->location.y;
     if (world->temp_grid[y][x] == 'J') {
-        player->space_junk_collected =+ 1;
+        player->space_junk_collected += 10;
 
     }
 }
