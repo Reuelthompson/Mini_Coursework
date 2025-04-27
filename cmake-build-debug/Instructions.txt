@@ -1,7 +1,7 @@
 Welcome to Asteroid Antics
 You are in space trying to avoid asteroids while collecting space junk.
-You have a limited ammount of fuel to work with to collect as much space junk as possible
-To move in any direction use the W, A, S, &D keys and 'q' to remain in place.
+You have a limited ammount of fuel to work with to collect at least 5 pieces of space junk
+To move in any direction use the W, A, S, & D keys and 'Q' to Jump 2 places (Uses 2 fuel).
 
 Difficulty:
 press '0' for easy mode.

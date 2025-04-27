@@ -72,6 +72,10 @@ int main(void) {
         if (player.fuel <= 0) {                     //Ends game if fuel reaches 0
             end = false;
         }
+        if (player.space_junk_collected >= 5) {
+            end = false;
+            printf("You Win!\n");
+        }
     } while (end);
 
     print_grid(&world);                         //Print world with 'D' instead of 'P'
@@ -120,9 +124,9 @@ void player_data_init(player_data *player, const int *game_mode) {    // Functio
     player->location.y           = 9;                                 // Set initial y-coordinate of player location
     player->score                = 0;                                 // Initialize player score to 0
     if (game_mode == 0) {                                             // Check if game mode is easy
-        player->fuel           = 100;                                 // Set fuel to 100 for easy mode
+        player->fuel            = 40;                                 // Set fuel to 100 for easy mode
     } else {                                                          // If game mode is hard
-        player->fuel            = 50;                                 // Set fuel to 50 for hard mode
+        player->fuel            = 20;                                 // Set fuel to 50 for hard mode
     }
     player->space_junk_collected = 0;                                 // Initialize space junk collected to 0
 }
@@ -167,11 +171,11 @@ void player_move(player_data *player, World *world) {    // Function to handle p
             player->location.y = player->location.y + 1;  // Update player's y-coordinate
             player->fuel--;                               // Decrease fuel for movement
             break;
-        case 'd':                                         // If 'd' is pressed, move right (increase x)
-            player->location.x = player->location.x + 1;  // Update player's x-coordinate
-            player->fuel--;                               // Decrease fuel for movement
+        case 'd':                                         // If 'd' is pressed, move right
+            player->location.x = player->location.x;      // Update player's x-coordinate
             break;
-        case 'q':                                         // If 'q' is pressed, do nothing
+        case 'q':                                         // If 'Q' is pressed, move right (increase x)
+            player->location.x = player->location.x + 1;
             break;
         default:                                          // If any other key is pressed, do nothing
             break;
