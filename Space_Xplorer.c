@@ -11,6 +11,7 @@
 void world_init(World *world);
 void asteroids_init(World *world, const int *game_mode);
 void space_junk_init(World *world, const int *game_mode);
+void space_juk_test_init(World *world);
 
 void print_grid(const World *world);
 void print_temp_grid(const World *world);
@@ -38,6 +39,7 @@ int instructions();
 int load_score_board();
 void sort_score_board(int count);
 void save_score_board(int count);
+
 //---------------------------------------------------------Main---------------------------------------------------------
 int main(void) {
 
@@ -52,6 +54,7 @@ int main(void) {
     world_init (&world);                        //Build world
     asteroids_init (&world, &game_mode);        //Add asteroids
     space_junk_init (&world, &game_mode);       //Add space junk
+    //space_juk_test_init(&world);              //Commented out as it is for test Purposes only
 
     player_name(&player);                       //Get player name
     player_data_init (&player, &game_mode);     //Sets score, position, and fuel
@@ -64,14 +67,15 @@ int main(void) {
     do {                                            //Do while loop
         print_grid(&world);                         //Prints world
         player_move(&player, &world);               //Moves player coordinates
-        printf("\n %d\n", player.fuel);       //Prints remaining fuel
+        printf("%d", player.fuel);       //Prints remaining fuel
         World_update(&world, &player, &game_mode);  //Moves all asteroids and space junk and creates new space
         space_junk_collected(&world, &player);      //Check if player is on space junk
+        printf("\n%d", player.space_junk_collected);
         end = collision_detection(&world, &player); //Check if player has hit an asteroid
         if (player.fuel <= 0) {                     //Ends game if fuel reaches 0
             end = false;
         }
-        if (player.space_junk_collected >= 5) {
+        if (player.space_junk_collected >= 5) {     //Ends game if 5 space junk gets collected
             end = false;
             printf("You Win!\n");
         }
@@ -94,7 +98,6 @@ int main(void) {
 }
 //--------------------------------------------Functions-----------------------------------------------------------------
 int instructions() {
-    // File pointer for reading the instructions file
     printf("\nWelcome to Asteroid Antics!\n");
     printf("Press any key to continue...");
     getchar();                                                      // Wait for user input to proceed
@@ -123,11 +126,12 @@ void player_data_init(player_data *player, const int *game_mode) {    // Functio
     player->location.y           = 9;                                 // Set initial y-coordinate of player location
     player->score                = 0;                                 // Initialize player score to 0
     if (game_mode == 0) {                                             // Check if game mode is easy
-        player->fuel            = 40;                                 // Set fuel to 100 for easy mode
+        player->fuel            = 40;                                 // Set fuel to 40 for easy mode
     } else {                                                          // If game mode is hard
-        player->fuel            = 20;                                 // Set fuel to 50 for hard mode
+        player->fuel            = 20;                                 // Set fuel to 20 for hard mode
     }
     player->space_junk_collected = 0;                                 // Initialize space junk collected to 0
+    player->spaceship_health     = 5;                                 // Initialize spaceship health to 5
 }
 void print_player_data(player_data *player) {                       //function for testing, to see what data is stored
     printf("\nUsername: %s\n", player->person.user_name);
@@ -137,6 +141,7 @@ void print_player_data(player_data *player) {                       //function f
     printf("score: %d\n", player->score);
     printf("fuel: %d\n", player->fuel);
     printf("space_junk_collected: %d\n", player->space_junk_collected);
+    printf("spaceship_health: %d\n", player->spaceship_health);
 }
 void player_world(World *world, const player_data *player) {    //Function places the player in the world
     for (int y = 0; y < WORLD_SIZE_X; y++) {                    //Improvement: doesn't need to be a nested for loop
@@ -173,9 +178,10 @@ void player_move(player_data *player, World *world) {    // Function to handle p
         case 'd':                                         // If 'd' is pressed, move right
             player->location.x = player->location.x;      // Update player's x-coordinate
             break;
-        case 'q':                                         // If 'Q' is pressed, move right (increase x)
+        case 'q':                                         // If 'q' is pressed, move right (increase x)
             player->location.x = player->location.x + 1;
             break;
+
         default:                                          // If any other key is pressed, do nothing
             break;
     }
@@ -201,6 +207,8 @@ void space_junk_collected(const World *world, player_data *player) {    // Funct
     // Check if the player is on a space junk ('J') on the temporary grid
     if (world->temp_grid[y][x] == 'J') {                                // If there's space junk at the player's position
         player->space_junk_collected += 1;                              // Increase the player's space junk collected by 1
+        player->fuel                 += 5;                              // Increase fuel by 5 if space junk is collected
+        player->spaceship_health     += 1;                              // Increase spaceship health by 1
     }
 }
 void score_calculation(World *world, player_data *player) {             // Function to calculate the player's score based on collected junk and remaining fuel
@@ -238,7 +246,15 @@ void asteroids_init(World *world, const int *game_mode) {       // Function to i
         }
     }
 }
-
+void space_juk_test_init(World *world) {
+    int x1 = 1, x2 = 2, x3 = 3, x4 = 4, x5 = 5;
+    int y = 9;
+    world->grid[y][x1] = 'J';
+    world->grid[y][x2] = 'J';
+    world->grid[y][x3] = 'J';
+    world->grid[y][x4] = 'J';
+    world->grid[y][x5] = 'J';
+}
 void space_junk_init(World *world,const int *game_mode) {       // Function to initialize space junk in the world
     int  difficulty = 5;
     for (int y = 0; y < WORLD_SIZE_Y; y++) {
@@ -397,7 +413,8 @@ void save_score_board(int count) {                              // Function to s
         return;
     }
     for (int i = 0; i < count; i++) {                   // Loop through the leaderboard
-        fprintf(file, "%s %s %d\n", leader_board[i].person.user_name, leader_board[i].person.ship_name, leader_board[i].score); // Write each entry
+        fprintf(file, "%s %s %d\n", leader_board[i].person.user_name, leader_board[i].person.ship_name,
+            leader_board[i].score);                     // Write each entry
     }
     fclose(file);                                       // Close the file after saving
 }

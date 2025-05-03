@@ -1,7 +1,6 @@
 //
 // Created by Reuel on 03/04/2025.
 //
-
 #ifndef GAME_H
 #define GAME_H
 //-------------------Global Libraries------------------------------
@@ -33,6 +32,7 @@ typedef struct{
   person_name person;
   int fuel;
   int space_junk_collected;
+  int spaceship_health;
   int score;
  }player_data;
 
